@@ -8,7 +8,8 @@
 		"build": "npx quack build",
 		"test": "npx quack test",
 		"tests": "npx quack test -g",
-		"coverage": "npx quack coverage"
+		"coverage": "npx quack coverage",
+		"test-browser": "npx mocha -u tdd --exit --timeout 60000 test/Browser_Integration_tests.js"
 	},
 	"mocha": {
 		"diff": true,
@@ -46,7 +47,9 @@
 	},
 	"homepage": "https://github.com/stevenvelozo/meadow-connection-sqlite-browser",
 	"devDependencies": {
-		"quackage": "^1.0.59",
+		"fable": "^3.1.63",
+		"puppeteer": "^24.38.0",
+		"quackage": "^1.0.60",
 		"retold-harness": "^1.1.2"
 	},
 	"browser": {
@@ -54,6 +57,6 @@
 	},
 	"dependencies": {
 		"fable-serviceproviderbase": "^3.0.19",
-		"sql.js": "^1.12.0"
+		"sql.js": "^1.14.1"
 	}
 }
