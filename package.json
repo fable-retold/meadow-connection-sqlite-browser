@@ -1,52 +1,56 @@
 {
-    "name": "meadow-connection-sqlite-browser",
-    "version": "0.0.1",
-    "description": "Meadow SQLite Plugin for the Browser",
-    "main": "source/Meadow-Connection-SQLite.js",
-    "scripts": {
-        "start": "node source/Meadow-Connection-SQLite.js",
-        "build": "npx quack build",
-        "test": "npx quack test",
-        "tests": "npx quack test -g",
-        "coverage": "npx quack coverage"
-    },
-    "mocha": {
-        "diff": true,
-        "extension": [
-            "js"
-        ],
-        "package": "./package.json",
-        "reporter": "spec",
-        "slow": "75",
-        "timeout": "5000",
-        "ui": "tdd",
-        "watch-files": [
-            "source/**/*.js",
-            "test/**/*.js"
-        ],
-        "watch-ignore": [
-            "lib/vendor"
-        ]
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/stevenvelozo/meadow-connection-sqlite.git"
-    },
-    "keywords": [
-        "cache"
-    ],
-    "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/stevenvelozo/meadow-connection-sqlite/issues"
-    },
-    "homepage": "https://github.com/stevenvelozo/meadow-connection-sqlite",
-    "devDependencies": {
-        "quackage": "^1.0.59",
-        "retold-harness": "^1.1.2"
-    },
-    "dependencies": {
-        "better-sqlite3": "^12.6.2",
-        "fable-serviceproviderbase": "^3.0.19"
-    }
+	"name": "meadow-connection-sqlite-browser",
+	"version": "0.1.0",
+	"description": "Meadow SQLite connection provider for the browser (sql.js / WASM)",
+	"main": "source/Meadow-Connection-SQLite-Browser.js",
+	"scripts": {
+		"start": "node source/Meadow-Connection-SQLite-Browser.js",
+		"build": "npx quack build",
+		"test": "npx quack test",
+		"tests": "npx quack test -g",
+		"coverage": "npx quack coverage"
+	},
+	"mocha": {
+		"diff": true,
+		"extension": [
+			"js"
+		],
+		"package": "./package.json",
+		"reporter": "spec",
+		"slow": "75",
+		"timeout": "10000",
+		"ui": "tdd",
+		"watch-files": [
+			"source/**/*.js",
+			"test/**/*.js"
+		],
+		"watch-ignore": [
+			"lib/vendor"
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/stevenvelozo/meadow-connection-sqlite-browser.git"
+	},
+	"keywords": [
+		"meadow",
+		"sqlite",
+		"browser",
+		"sql.js",
+		"wasm"
+	],
+	"author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/stevenvelozo/meadow-connection-sqlite-browser/issues"
+	},
+	"homepage": "https://github.com/stevenvelozo/meadow-connection-sqlite-browser",
+	"devDependencies": {
+		"quackage": "^1.0.59",
+		"retold-harness": "^1.1.2"
+	},
+	"dependencies": {
+		"fable-serviceproviderbase": "^3.0.19",
+		"sql.js": "^1.12.0"
+	}
 }
