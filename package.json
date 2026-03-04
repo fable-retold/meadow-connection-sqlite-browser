@@ -49,6 +49,9 @@
 		"quackage": "^1.0.59",
 		"retold-harness": "^1.1.2"
 	},
+	"browser": {
+		"sql.js": false
+	},
 	"dependencies": {
 		"fable-serviceproviderbase": "^3.0.19",
 		"sql.js": "^1.12.0"

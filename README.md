@@ -1,45 +1,74 @@
-# Meadow Connection SQLite
+# Meadow Connection SQLite Browser
 
-A SQLite database connection provider for the Meadow ORM. Wraps [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) as a Fable service, providing file-based database connections with WAL journal mode and DDL generation from Meadow table schemas.
+A browser-compatible SQLite connection provider for the Meadow ORM. Drop-in replacement for [meadow-connection-sqlite](https://github.com/stevenvelozo/meadow-connection-sqlite) that uses [sql.js](https://github.com/sql-js/sql.js) (SQLite compiled to WASM) instead of better-sqlite3 (native Node.js addon).
 
-[![Build Status](https://github.com/stevenvelozo/meadow-connection-sqlite/workflows/Meadow-Connection-SQLite/badge.svg)](https://github.com/stevenvelozo/meadow-connection-sqlite/actions)
-[![npm version](https://badge.fury.io/js/meadow-connection-sqlite.svg)](https://badge.fury.io/js/meadow-connection-sqlite)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
+## Why
+
+The standard `meadow-connection-sqlite` package uses `better-sqlite3`, a native C++ addon that cannot run in a web browser. This package swaps in `sql.js` (SQLite compiled to WebAssembly) and wraps it with a better-sqlite3 compatible API, so the rest of the Meadow stack works without changes.
+
 ## Features
 
-- **Better-SQLite3 Wrapper** -- Synchronous, high-performance SQLite access via [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
-- **Fable Service Provider** -- Registers with a Fable instance for dependency injection, logging, and configuration
-- **WAL Journal Mode** -- Automatically enables Write-Ahead Logging for performance on connect
-- **Schema-Driven DDL** -- Generates `CREATE TABLE` statements from Meadow table schemas with support for ID, GUID, ForeignKey, Numeric, Decimal, String, Text, DateTime, and Boolean column types
-- **In-Memory Mode** -- Use `:memory:` as the file path for ephemeral databases in tests and prototypes
-- **Connection Safety** -- Guards against double-connect and missing file path errors with descriptive logging
-- **Direct Database Access** -- Exposes the underlying `better-sqlite3` database instance and module via getters
+- **Browser + Node.js** -- Works in both environments. In the browser, sql.js is loaded via `<script>` tag. In Node.js, it falls back to `require('sql.js')`.
+- **Same API Surface** -- Provides `.db`, `.connected`, `.connectAsync()`, `.preparedStatement`, and the full schema provider (`createTables`, `createIndices`, introspection, etc.)
+- **better-sqlite3 Compat Layer** -- Wraps sql.js with `.prepare().run()`, `.prepare().all()`, `.prepare().get()`, and `.exec()` so Meadow-Provider-SQLite works transparently
+- **In-Memory Only** -- Creates an in-memory SQLite database (no filesystem required)
+- **Fable Service** -- Registers as `MeadowConnectionSQLite` service type, compatible with `dal.setProvider('SQLite')`
 
 ## Installation
 
 ```bash
-npm install meadow-connection-sqlite
+npm install meadow-connection-sqlite-browser
 ```
+
+## Browser Setup
+
+The consuming web application must load sql.js itself. This package does **not** bundle sql.js -- it expects the WASM loader to be available at runtime.
+
+### 1. Copy the sql.js files to your static assets
+
+The two files you need are in `node_modules/sql.js/dist/`:
+
+- `sql-wasm.js` -- The JavaScript loader
+- `sql-wasm.wasm` -- The SQLite WASM binary
+
+Copy both to the directory your HTML is served from (e.g. `dist/`).
+
+### 2. Load sql-wasm.js via a script tag
+
+```html
+<script src="./sql-wasm.js"></script>
+<script src="./your-app-bundle.js"></script>
+```
+
+This creates the global `initSqlJs` function that `meadow-connection-sqlite-browser` uses to initialize the WASM-based SQLite engine.
+
+### 3. Exclude sql.js from your browserify bundle
+
+The `browser` field in this package's `package.json` already tells browserify to exclude sql.js from the bundle. If you are using a custom build script, add:
+
+```javascript
+bundler.ignore('sql.js');
+```
+
+If you are using quackage, the `browser` field is respected automatically.
 
 ## Quick Start
 
+### Fable Service Registration
+
 ```javascript
 const libFable = require('fable');
-const MeadowConnectionSQLite = require('meadow-connection-sqlite');
+const libMeadowConnectionSQLiteBrowser = require('meadow-connection-sqlite-browser');
 
-let fable = new libFable(
-{
-	SQLite:
-	{
-		SQLiteFilePath: './my-database.sqlite'
-	}
-});
+let fable = new libFable({ Product: 'MyApp', ProductVersion: '1.0.0' });
 
-let connection = fable.instantiateServiceProvider('MeadowConnectionSQLite',
-	{}, MeadowConnectionSQLite);
+// Register and instantiate the service
+fable.serviceManager.addServiceType('MeadowSQLiteProvider', libMeadowConnectionSQLiteBrowser);
+let connection = fable.serviceManager.instantiateServiceProvider('MeadowSQLiteProvider');
 
 connection.connectAsync((pError, pDatabase) =>
 {
@@ -49,84 +78,82 @@ connection.connectAsync((pError, pDatabase) =>
 		return;
 	}
 
-	// Use the better-sqlite3 database directly
-	let stmt = connection.db.prepare('SELECT * FROM Users WHERE id = ?');
-	let user = stmt.get(42);
+	// fable.MeadowSQLiteProvider is now set automatically
+	// dal.setProvider('SQLite') works transparently
+
+	// Use the better-sqlite3 compatible wrapper directly
+	connection.db.exec('CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT)');
+	connection.db.prepare('INSERT INTO Test (name) VALUES (:name)').run({ name: 'hello' });
+	let rows = connection.db.prepare('SELECT * FROM Test').all();
 });
 ```
 
-## Configuration
-
-The SQLite file path can be provided through Fable settings or the service provider options:
-
-### Via Fable Settings
+### With Meadow
 
 ```javascript
-let fable = new libFable(
-{
-	SQLite:
-	{
-		SQLiteFilePath: './data/app.sqlite'
-	}
-});
+const libMeadow = require('meadow');
+
+// After connectAsync succeeds:
+let meadow = libMeadow.new(fable);
+let dal = meadow.loadFromPackageObject(mySchemaPackage);
+dal.setProvider('SQLite');
+dal.setIDUser(1);
+
+// Meadow CRUD operations now go through the in-memory SQLite database
 ```
-
-### Via Provider Options
-
-```javascript
-let connection = fable.instantiateServiceProvider('MeadowConnectionSQLite',
-{
-	SQLiteFilePath: './data/app.sqlite'
-}, MeadowConnectionSQLite);
-```
-
-Any additional options are passed through to the `better-sqlite3` constructor.
 
 ## API
 
 ### `connectAsync(fCallback)`
 
-Open the SQLite database file and enable WAL journal mode.
+Initialize sql.js and create an in-memory SQLite database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `fCallback` | `Function` | Callback receiving `(error, database)` |
 
+In the browser, uses the global `initSqlJs` function (from the `<script>` tag). In Node.js, falls back to `require('sql.js')`.
+
 ### `connect()`
 
-Synchronous convenience wrapper for `connectAsync` (no callback, logs a warning).
+Synchronous convenience wrapper (calls `connectAsync` without a callback, logs a warning).
 
 ### `db` (getter)
 
-Returns the underlying `better-sqlite3` database instance for direct query access.
+Returns the BetterSqlite3Compat wrapper -- a better-sqlite3 compatible API around the sql.js database. Supports:
+
+- `.exec(sql)` -- Execute raw SQL
+- `.prepare(sql).run(params)` -- Execute with named params, returns `{ lastInsertRowid, changes }`
+- `.prepare(sql).all(params)` -- Query, returns array of row objects
+- `.prepare(sql).get(params)` -- Query, returns first row or `undefined`
+
+### `sqlJsDb` (getter)
+
+Returns the raw sql.js `Database` instance for direct sql.js operations.
 
 ### `SQLite` (getter)
 
-Returns the `better-sqlite3` library module.
+Returns the sql.js `SQL` constructor (for creating additional databases).
 
 ### `connected` (property)
 
-Boolean indicating whether the database connection is open.
+Boolean indicating whether the database is connected.
 
-### `generateCreateTableStatement(pMeadowTableSchema)`
+### Schema Provider
 
-Generate a `CREATE TABLE` SQL statement from a Meadow table schema object.
+All schema operations are delegated to the built-in Meadow-Schema-SQLite provider:
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `pMeadowTableSchema` | `Object` | Meadow table schema with `TableName` and `Columns` array |
-
-### `createTable(pMeadowTableSchema, fCallback)`
-
-Execute a `CREATE TABLE` statement against the connected database.
-
-### `createTables(pMeadowSchema, fCallback)`
-
-Create all tables defined in a Meadow schema object (iterates `pMeadowSchema.Tables` sequentially).
-
-### `generateDropTableStatement(pTableName)`
-
-Generate a `DROP TABLE IF EXISTS` SQL statement for the given table name.
+- `generateCreateTableStatement(pMeadowTableSchema)` -- Generate `CREATE TABLE` SQL
+- `generateDropTableStatement(pTableName)` -- Generate `DROP TABLE IF EXISTS` SQL
+- `createTable(pMeadowTableSchema, fCallback)` -- Execute a `CREATE TABLE`
+- `createTables(pMeadowSchema, fCallback)` -- Create all tables from `{ Tables: [...] }`
+- `createIndices(pMeadowTableSchema, fCallback)` -- Create all indices for a table
+- `createAllIndices(pMeadowSchema, fCallback)` -- Create all indices for all tables
+- `listTables(fCallback)` -- List all user tables
+- `introspectTableColumns(pTableName, fCallback)` -- Get column definitions
+- `introspectTableIndices(pTableName, fCallback)` -- Get index definitions
+- `introspectDatabaseSchema(fCallback)` -- Full DDL schema for all tables
+- `generateMeadowPackageFromTable(pTableName, fCallback)` -- Generate a Meadow package JSON
 
 ## Column Type Mapping
 
@@ -142,44 +169,22 @@ Generate a `DROP TABLE IF EXISTS` SQL statement for the given table name.
 | `DateTime` | `TEXT` |
 | `Boolean` | `INTEGER NOT NULL DEFAULT 0` |
 
-## Part of the Retold Framework
+## Node.js Usage
 
-Meadow Connection SQLite is a database connector for the Meadow data access layer:
-
-- [meadow](https://github.com/stevenvelozo/meadow) - ORM and data access framework
-- [foxhound](https://github.com/stevenvelozo/foxhound) - Query DSL used by Meadow
-- [stricture](https://github.com/stevenvelozo/stricture) - Schema definition tool
-- [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) - RESTful endpoint generation
-- [fable](https://github.com/stevenvelozo/fable) - Application services framework
-
-## Testing
-
-Run the test suite:
+Works identically in Node.js -- `sql.js` is loaded via `require('sql.js')` as a fallback when the global `initSqlJs` is not available. No `<script>` tag or WASM file setup needed; sql.js resolves its own WASM binary automatically.
 
 ```bash
 npm test
 ```
 
-Run with coverage:
+## Part of the Retold Framework
 
-```bash
-npm run coverage
-```
-
-## Related Packages
-
-- [meadow](https://github.com/stevenvelozo/meadow) -- Data access and ORM
+- [meadow](https://github.com/stevenvelozo/meadow) -- ORM and data access framework
+- [meadow-connection-sqlite](https://github.com/stevenvelozo/meadow-connection-sqlite) -- Node.js SQLite provider (better-sqlite3)
 - [foxhound](https://github.com/stevenvelozo/foxhound) -- Query DSL used by Meadow
-- [stricture](https://github.com/stevenvelozo/stricture) -- Schema definition tool
 - [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) -- RESTful endpoint generation
-- [meadow-connection-mysql](https://github.com/stevenvelozo/meadow-connection-mysql) -- MySQL connection provider
-- [meadow-connection-mssql](https://github.com/stevenvelozo/meadow-connection-mssql) -- MSSQL connection provider
 - [fable](https://github.com/stevenvelozo/fable) -- Application services framework
 
 ## License
 
 MIT
-
-## Contributing
-
-Pull requests are welcome. For details on our code of conduct, contribution process, and testing requirements, see the [Retold Contributing Guide](https://github.com/stevenvelozo/retold/blob/main/docs/contributing.md).
