@@ -1,8 +1,5 @@
 "use strict";
 
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 (function (f) {
   if (typeof exports === "object" && typeof module !== "undefined") {
     module.exports = f();
@@ -144,14 +141,14 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             // With no fable, check to see if there was an object passed into either of the first two
             // Parameters, and if so, treat it as the options object
             this.options = typeof pFable === 'object' && !pFable.isFable ? pFable : typeof pOptions === 'object' ? pOptions : {};
-            this.UUID = "CORE-SVC-".concat(Math.floor(Math.random() * (99999 - 10000) + 10000));
+            this.UUID = `CORE-SVC-${Math.floor(Math.random() * (99999 - 10000) + 10000)}`;
           }
 
           // It's expected that the deriving class will set this
-          this.serviceType = "Unknown-".concat(this.UUID);
+          this.serviceType = `Unknown-${this.UUID}`;
 
           // The service hash is used to identify the specific instantiation of the service in the services map
-          this.Hash = typeof pServiceHash === 'string' ? pServiceHash : !this.fable && typeof pOptions === 'string' ? pOptions : "".concat(this.UUID);
+          this.Hash = typeof pServiceHash === 'string' ? pServiceHash : !this.fable && typeof pOptions === 'string' ? pOptions : `${this.UUID}`;
         }
 
         /**
@@ -159,7 +156,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
          */
         connectFable(pFable) {
           if (typeof pFable !== 'object' || !pFable.isFable) {
-            let tmpErrorMessage = "Fable Service Provider Base: Cannot connect to Fable, invalid Fable object passed in.  The pFable parameter was a [".concat(typeof pFable, "].}");
+            let tmpErrorMessage = `Fable Service Provider Base: Cannot connect to Fable, invalid Fable object passed in.  The pFable parameter was a [${typeof pFable}].}`;
             console.log(tmpErrorMessage);
             return new Error(tmpErrorMessage);
           }
@@ -177,8 +174,8 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           }
           return true;
         }
+        static isFableService = true;
       }
-      _defineProperty(FableServiceProviderBase, "isFableService", true);
       module.exports = FableServiceProviderBase;
 
       // This is left here in case we want to go back to having different code/base class for "core" services
@@ -355,7 +352,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
            * @param {string} pSQL - The SQL statement
            * @returns {object} A statement-like object with run(), all(), and get()
            */
-          prepare: function prepare(pSQL) {
+          prepare: function (pSQL) {
             return {
               /**
                * Execute a non-SELECT statement (INSERT, UPDATE, DELETE).
@@ -365,7 +362,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
                * @param {object} [pParams] - Named parameters
                * @returns {{ lastInsertRowid: number, changes: number }}
                */
-              run: function run(pParams) {
+              run: function (pParams) {
                 let tmpBindParams = resolveBindParams(arguments);
                 try {
                   pSqlJsDb.run(pSQL, tmpBindParams);
@@ -386,7 +383,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
                * @param {object} [pParams] - Named parameters
                * @returns {Array<object>} Array of row objects
                */
-              all: function all(pParams) {
+              all: function (pParams) {
                 let tmpBindParams = resolveBindParams(arguments);
                 let tmpResults;
                 try {
@@ -406,7 +403,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
                * @param {object|*} [pParams] - Named parameters or positional values
                * @returns {object|undefined} First row object, or undefined
                */
-              get: function get(pParams) {
+              get: function (pParams) {
                 let tmpBindParams = resolveBindParams(arguments);
                 let tmpResults;
                 try {
@@ -436,7 +433,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
            * @param {string} pSQL - The SQL statement
            * @param {object} [pParams] - Optional named parameters
            */
-          exec: function exec(pSQL, pParams) {
+          exec: function (pSQL, pParams) {
             let tmpBindParams = convertParams(pParams);
             pSqlJsDb.run(pSQL, tmpBindParams);
           }
@@ -517,7 +514,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           this._SQL = null;
 
           // Schema provider handles DDL operations (create, drop, index, etc.)
-          this._SchemaProvider = new libMeadowSchemaSQLite(this.fable, this.options, "".concat(this.Hash, "-Schema"));
+          this._SchemaProvider = new libMeadowSchemaSQLite(this.fable, this.options, `${this.Hash}-Schema`);
         }
 
         /** @returns {object} The schema provider instance */
@@ -729,7 +726,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             tmpInitOptions.locateFile = this.options.locateFile;
           } else if (typeof window !== 'undefined') {
             // Browser: default to same directory as the page
-            tmpInitOptions.locateFile = pFile => "./".concat(pFile);
+            tmpInitOptions.locateFile = pFile => `./${pFile}`;
           }
           // Node.js without explicit locateFile: let sql.js find its own WASM
 
@@ -742,7 +739,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             tmpSelf.log.info('Meadow-Connection-SQLite-Browser connected — in-memory SQLite database ready.');
             return tmpCallback(null, tmpSelf._database);
           }).catch(pError => {
-            tmpSelf.log.error("Meadow-Connection-SQLite-Browser connection error: ".concat(pError), pError);
+            tmpSelf.log.error(`Meadow-Connection-SQLite-Browser connection error: ${pError}`, pError);
             return tmpCallback(pError);
           });
         }
@@ -832,56 +829,62 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           return this;
         }
         generateDropTableStatement(pTableName) {
-          return "DROP TABLE IF EXISTS ".concat(pTableName, ";");
+          return `DROP TABLE IF EXISTS ${pTableName};`;
         }
         generateCreateTableStatement(pMeadowTableSchema) {
-          this.log.info("--> Building the table create string for ".concat(pMeadowTableSchema.TableName, " ..."));
+          this.log.info(`--> Building the table create string for ${pMeadowTableSchema.TableName} ...`);
           let tmpPrimaryKey = false;
-          let tmpCreateTableStatement = "--   [ ".concat(pMeadowTableSchema.TableName, " ]");
-          tmpCreateTableStatement += "\nCREATE TABLE IF NOT EXISTS ".concat(pMeadowTableSchema.TableName, "\n    (");
+          let tmpCreateTableStatement = `--   [ ${pMeadowTableSchema.TableName} ]`;
+          tmpCreateTableStatement += `\nCREATE TABLE IF NOT EXISTS ${pMeadowTableSchema.TableName}\n    (`;
           for (let j = 0; j < pMeadowTableSchema.Columns.length; j++) {
             let tmpColumn = pMeadowTableSchema.Columns[j];
 
             // If we aren't the first column, append a comma.
             if (j > 0) {
-              tmpCreateTableStatement += ",";
+              tmpCreateTableStatement += `,`;
             }
-            tmpCreateTableStatement += "\n";
+            tmpCreateTableStatement += `\n`;
             switch (tmpColumn.DataType) {
               case 'ID':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " INTEGER PRIMARY KEY AUTOINCREMENT");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} INTEGER PRIMARY KEY AUTOINCREMENT`;
                 tmpPrimaryKey = tmpColumn.Column;
                 break;
               case 'GUID':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " TEXT DEFAULT '00000000-0000-0000-0000-000000000000'");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} TEXT DEFAULT '00000000-0000-0000-0000-000000000000'`;
                 break;
               case 'ForeignKey':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " INTEGER NOT NULL DEFAULT 0");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} INTEGER NOT NULL DEFAULT 0`;
                 break;
               case 'Numeric':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " INTEGER NOT NULL DEFAULT 0");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} INTEGER NOT NULL DEFAULT 0`;
                 break;
               case 'Decimal':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " REAL");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} REAL`;
                 break;
               case 'String':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " TEXT NOT NULL DEFAULT ''");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} TEXT NOT NULL DEFAULT ''`;
                 break;
               case 'Text':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " TEXT");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} TEXT`;
                 break;
               case 'DateTime':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " TEXT");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} TEXT`;
                 break;
               case 'Boolean':
-                tmpCreateTableStatement += "        ".concat(tmpColumn.Column, " INTEGER NOT NULL DEFAULT 0");
+                tmpCreateTableStatement += `        ${tmpColumn.Column} INTEGER NOT NULL DEFAULT 0`;
+                break;
+              case 'JSON':
+                tmpCreateTableStatement += `        ${tmpColumn.Column} TEXT`;
+                break;
+              case 'JSONProxy':
+                tmpCreateTableStatement += `        ${tmpColumn.StorageColumn} TEXT`;
                 break;
               default:
                 break;
             }
           }
-          tmpCreateTableStatement += "\n    );";
-          this.log.info("Generated Create Table Statement: ".concat(tmpCreateTableStatement));
+          tmpCreateTableStatement += `\n    );`;
+          this.log.info(`Generated Create Table Statement: ${tmpCreateTableStatement}`);
           return tmpCreateTableStatement;
         }
         createTables(pMeadowSchema, fCallback) {
@@ -889,7 +892,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             return this.createTable(pTable, fCreateComplete);
           }, pCreateError => {
             if (pCreateError) {
-              this.log.error("Meadow-SQLite Error creating tables from Schema: ".concat(pCreateError), pCreateError);
+              this.log.error(`Meadow-SQLite Error creating tables from Schema: ${pCreateError}`, pCreateError);
             }
             this.log.info('Done creating tables!');
             return fCallback(pCreateError);
@@ -899,10 +902,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           let tmpCreateTableStatement = this.generateCreateTableStatement(pMeadowTableSchema);
           try {
             this._Database.exec(tmpCreateTableStatement);
-            this.log.info("Meadow-SQLite CREATE TABLE ".concat(pMeadowTableSchema.TableName, " Success"));
+            this.log.info(`Meadow-SQLite CREATE TABLE ${pMeadowTableSchema.TableName} Success`);
             return fCallback();
           } catch (pError) {
-            this.log.error("Meadow-SQLite CREATE TABLE ".concat(pMeadowTableSchema.TableName, " failed!"), pError);
+            this.log.error(`Meadow-SQLite CREATE TABLE ${pMeadowTableSchema.TableName} failed!`, pError);
             return fCallback(pError);
           }
         }
@@ -942,7 +945,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             switch (tmpColumn.DataType) {
               case 'GUID':
                 tmpIndices.push({
-                  Name: "AK_M_".concat(tmpColumn.Column),
+                  Name: `AK_M_${tmpColumn.Column}`,
                   TableName: tmpTableName,
                   Columns: [tmpColumn.Column],
                   Unique: true,
@@ -951,7 +954,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
                 break;
               case 'ForeignKey':
                 tmpIndices.push({
-                  Name: "IX_M_".concat(tmpColumn.Column),
+                  Name: `IX_M_${tmpColumn.Column}`,
                   TableName: tmpTableName,
                   Columns: [tmpColumn.Column],
                   Unique: false,
@@ -967,7 +970,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
                 if (tmpColumn.Indexed) {
                   let tmpIsUnique = tmpColumn.Indexed === 'unique';
                   let tmpPrefix = tmpIsUnique ? 'AK_M_T' : 'IX_M_T';
-                  let tmpAutoName = "".concat(tmpPrefix, "_").concat(tmpTableName, "_C_").concat(tmpColumn.Column);
+                  let tmpAutoName = `${tmpPrefix}_${tmpTableName}_C_${tmpColumn.Column}`;
                   tmpIndices.push({
                     Name: tmpColumn.IndexName || tmpAutoName,
                     TableName: tmpTableName,
@@ -985,7 +988,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             for (let k = 0; k < pMeadowTableSchema.Indices.length; k++) {
               let tmpExplicitIndex = pMeadowTableSchema.Indices[k];
               tmpIndices.push({
-                Name: tmpExplicitIndex.Name || "IX_".concat(tmpTableName, "_").concat(k),
+                Name: tmpExplicitIndex.Name || `IX_${tmpTableName}_${k}`,
                 TableName: tmpTableName,
                 Columns: Array.isArray(tmpExplicitIndex.Columns) ? tmpExplicitIndex.Columns : [tmpExplicitIndex.Columns],
                 Unique: tmpExplicitIndex.Unique || false,
@@ -1018,15 +1021,15 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           let tmpIndices = this.getIndexDefinitionsFromSchema(pMeadowTableSchema);
           let tmpTableName = pMeadowTableSchema.TableName;
           if (tmpIndices.length === 0) {
-            return "-- No indices to create for ".concat(tmpTableName, "\n");
+            return `-- No indices to create for ${tmpTableName}\n`;
           }
-          let tmpScript = "-- Index Definitions for ".concat(tmpTableName, " -- Generated ").concat(new Date().toJSON(), "\n\n");
+          let tmpScript = `-- Index Definitions for ${tmpTableName} -- Generated ${new Date().toJSON()}\n\n`;
           for (let i = 0; i < tmpIndices.length; i++) {
             let tmpIndex = tmpIndices[i];
             let tmpColumnList = this._buildColumnList(tmpIndex.Columns);
             let tmpCreateKeyword = tmpIndex.Unique ? 'CREATE UNIQUE INDEX' : 'CREATE INDEX';
-            tmpScript += "-- Index: ".concat(tmpIndex.Name, "\n");
-            tmpScript += "".concat(tmpCreateKeyword, " IF NOT EXISTS ").concat(tmpIndex.Name, " ON ").concat(tmpIndex.TableName, "(").concat(tmpColumnList, ");\n\n");
+            tmpScript += `-- Index: ${tmpIndex.Name}\n`;
+            tmpScript += `${tmpCreateKeyword} IF NOT EXISTS ${tmpIndex.Name} ON ${tmpIndex.TableName}(${tmpColumnList});\n\n`;
           }
           return tmpScript;
         }
@@ -1053,8 +1056,8 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             let tmpCreateKeyword = tmpIndex.Unique ? 'CREATE UNIQUE INDEX' : 'CREATE INDEX';
             tmpStatements.push({
               Name: tmpIndex.Name,
-              Statement: "".concat(tmpCreateKeyword, " ").concat(tmpIndex.Name, " ON ").concat(tmpIndex.TableName, "(").concat(tmpColumnList, ")"),
-              CheckStatement: "SELECT COUNT(*) AS IndexExists FROM sqlite_master WHERE type = 'index' AND name = '".concat(tmpIndex.Name, "'")
+              Statement: `${tmpCreateKeyword} ${tmpIndex.Name} ON ${tmpIndex.TableName}(${tmpColumnList})`,
+              CheckStatement: `SELECT COUNT(*) AS IndexExists FROM sqlite_master WHERE type = 'index' AND name = '${tmpIndex.Name}'`
             });
           }
           return tmpStatements;
@@ -1071,17 +1074,17 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
          */
         createIndex(pIndexStatement, fCallback) {
           if (!this._Database) {
-            this.log.error("Meadow-SQLite CREATE INDEX ".concat(pIndexStatement.Name, " failed: not connected."));
+            this.log.error(`Meadow-SQLite CREATE INDEX ${pIndexStatement.Name} failed: not connected.`);
             return fCallback(new Error('Not connected to SQLite'));
           }
           try {
             // Inject IF NOT EXISTS for idempotent execution
             let tmpStatement = pIndexStatement.Statement.replace('CREATE UNIQUE INDEX ', 'CREATE UNIQUE INDEX IF NOT EXISTS ').replace('CREATE INDEX ', 'CREATE INDEX IF NOT EXISTS ');
             this._Database.exec(tmpStatement);
-            this.log.info("Meadow-SQLite CREATE INDEX ".concat(pIndexStatement.Name, " executed successfully."));
+            this.log.info(`Meadow-SQLite CREATE INDEX ${pIndexStatement.Name} executed successfully.`);
             return fCallback();
           } catch (pError) {
-            this.log.error("Meadow-SQLite CREATE INDEX ".concat(pIndexStatement.Name, " failed!"), pError);
+            this.log.error(`Meadow-SQLite CREATE INDEX ${pIndexStatement.Name} failed!`, pError);
             return fCallback(pError);
           }
         }
@@ -1095,16 +1098,16 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
         createIndices(pMeadowTableSchema, fCallback) {
           let tmpStatements = this.generateCreateIndexStatements(pMeadowTableSchema);
           if (tmpStatements.length === 0) {
-            this.log.info("No indices to create for ".concat(pMeadowTableSchema.TableName, "."));
+            this.log.info(`No indices to create for ${pMeadowTableSchema.TableName}.`);
             return fCallback();
           }
           this.fable.Utility.eachLimit(tmpStatements, 1, (pStatement, fCreateComplete) => {
             return this.createIndex(pStatement, fCreateComplete);
           }, pCreateError => {
             if (pCreateError) {
-              this.log.error("Meadow-SQLite Error creating indices for ".concat(pMeadowTableSchema.TableName, ": ").concat(pCreateError), pCreateError);
+              this.log.error(`Meadow-SQLite Error creating indices for ${pMeadowTableSchema.TableName}: ${pCreateError}`, pCreateError);
             } else {
-              this.log.info("Done creating indices for ".concat(pMeadowTableSchema.TableName, "!"));
+              this.log.info(`Done creating indices for ${pMeadowTableSchema.TableName}!`);
             }
             return fCallback(pCreateError);
           });
@@ -1121,7 +1124,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             return this.createIndices(pTable, fCreateComplete);
           }, pCreateError => {
             if (pCreateError) {
-              this.log.error("Meadow-SQLite Error creating indices from schema: ".concat(pCreateError), pCreateError);
+              this.log.error(`Meadow-SQLite Error creating indices from schema: ${pCreateError}`, pCreateError);
             }
             this.log.info('Done creating all indices!');
             return fCallback(pCreateError);
@@ -1271,14 +1274,14 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           }
           try {
             // Get column info
-            let tmpColumns = this._Database.prepare("PRAGMA table_info('".concat(pTableName, "')")).all();
+            let tmpColumns = this._Database.prepare(`PRAGMA table_info('${pTableName}')`).all();
 
             // Check if the table has AUTOINCREMENT by inspecting sqlite_master
             let tmpCreateSQL = this._Database.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?").get(pTableName);
             let tmpHasAutoIncrement = tmpCreateSQL && tmpCreateSQL.sql && tmpCreateSQL.sql.toUpperCase().indexOf('AUTOINCREMENT') >= 0;
 
             // Get foreign keys to identify FK columns
-            let tmpForeignKeys = this._Database.prepare("PRAGMA foreign_key_list('".concat(pTableName, "')")).all();
+            let tmpForeignKeys = this._Database.prepare(`PRAGMA foreign_key_list('${pTableName}')`).all();
             let tmpFKColumnSet = new Set(tmpForeignKeys.map(pFK => {
               return pFK.from;
             }));
@@ -1298,7 +1301,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             }
             return fCallback(null, tmpResult);
           } catch (pError) {
-            this.log.error("Meadow-SQLite introspectTableColumns for ".concat(pTableName, " failed!"), pError);
+            this.log.error(`Meadow-SQLite introspectTableColumns for ${pTableName} failed!`, pError);
             return fCallback(pError);
           }
         }
@@ -1316,7 +1319,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             return fCallback(new Error('Not connected to SQLite'));
           }
           try {
-            let tmpIndexList = this._Database.prepare("PRAGMA index_list('".concat(pTableName, "')")).all();
+            let tmpIndexList = this._Database.prepare(`PRAGMA index_list('${pTableName}')`).all();
             let tmpIndices = [];
             for (let i = 0; i < tmpIndexList.length; i++) {
               let tmpIdx = tmpIndexList[i];
@@ -1325,7 +1328,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
               if (tmpIdx.origin === 'pk') {
                 continue;
               }
-              let tmpIndexInfo = this._Database.prepare("PRAGMA index_info('".concat(tmpIdx.name, "')")).all();
+              let tmpIndexInfo = this._Database.prepare(`PRAGMA index_info('${tmpIdx.name}')`).all();
               let tmpColumnNames = tmpIndexInfo.map(pInfo => {
                 return pInfo.name;
               });
@@ -1337,7 +1340,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             }
             return fCallback(null, tmpIndices);
           } catch (pError) {
-            this.log.error("Meadow-SQLite introspectTableIndices for ".concat(pTableName, " failed!"), pError);
+            this.log.error(`Meadow-SQLite introspectTableIndices for ${pTableName} failed!`, pError);
             return fCallback(pError);
           }
         }
@@ -1353,7 +1356,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             return fCallback(new Error('Not connected to SQLite'));
           }
           try {
-            let tmpForeignKeys = this._Database.prepare("PRAGMA foreign_key_list('".concat(pTableName, "')")).all();
+            let tmpForeignKeys = this._Database.prepare(`PRAGMA foreign_key_list('${pTableName}')`).all();
             let tmpResult = [];
             for (let i = 0; i < tmpForeignKeys.length; i++) {
               let tmpFK = tmpForeignKeys[i];
@@ -1365,7 +1368,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
             }
             return fCallback(null, tmpResult);
           } catch (pError) {
-            this.log.error("Meadow-SQLite introspectTableForeignKeys for ".concat(pTableName, " failed!"), pError);
+            this.log.error(`Meadow-SQLite introspectTableForeignKeys for ${pTableName} failed!`, pError);
             return fCallback(pError);
           }
         }
@@ -1393,7 +1396,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           let tmpName = pIndex.Name;
 
           // Check for auto-detected GUID index: AK_M_{Column}
-          if (tmpName === "AK_M_".concat(tmpColumn)) {
+          if (tmpName === `AK_M_${tmpColumn}`) {
             return {
               type: 'guid-auto',
               column: tmpColumn
@@ -1401,7 +1404,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           }
 
           // Check for auto-detected FK index: IX_M_{Column}
-          if (tmpName === "IX_M_".concat(tmpColumn)) {
+          if (tmpName === `IX_M_${tmpColumn}`) {
             return {
               type: 'fk-auto',
               column: tmpColumn
@@ -1409,7 +1412,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           }
 
           // Check for auto-generated column-level index: IX_M_T_{Table}_C_{Column}
-          let tmpRegularAutoName = "IX_M_T_".concat(pTableName, "_C_").concat(tmpColumn);
+          let tmpRegularAutoName = `IX_M_T_${pTableName}_C_${tmpColumn}`;
           if (tmpName === tmpRegularAutoName && !pIndex.Unique) {
             return {
               type: 'column-auto',
@@ -1419,7 +1422,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
           }
 
           // Check for auto-generated unique column-level index: AK_M_T_{Table}_C_{Column}
-          let tmpUniqueAutoName = "AK_M_T_".concat(pTableName, "_C_").concat(tmpColumn);
+          let tmpUniqueAutoName = `AK_M_T_${pTableName}_C_${tmpColumn}`;
           if (tmpName === tmpUniqueAutoName && pIndex.Unique) {
             return {
               type: 'column-auto',
@@ -1545,7 +1548,7 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
               });
             }, pError => {
               if (pError) {
-                this.log.error("Meadow-SQLite introspectDatabaseSchema failed: ".concat(pError), pError);
+                this.log.error(`Meadow-SQLite introspectDatabaseSchema failed: ${pError}`, pError);
                 return fCallback(pError);
               }
               return fCallback(null, {
@@ -1600,6 +1603,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
               return 'DateTime';
             case 'Boolean':
               return 'Boolean';
+            case 'JSON':
+              return 'JSON';
+            case 'JSONProxy':
+              return 'JSONProxy';
             default:
               return 'String';
           }
@@ -1631,6 +1638,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
               return '';
             case 'Boolean':
               return false;
+            case 'JSON':
+              return {};
+            case 'JSONProxy':
+              return {};
             default:
               return '';
           }
