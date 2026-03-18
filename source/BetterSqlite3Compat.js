@@ -67,6 +67,13 @@ function createBetterSqlite3Compat(pSqlJsDb)
 			{
 				tmpValue = null;
 			}
+			// Coerce objects and arrays to JSON strings
+			// (SQLite has no native object type; JSON/JSONProxy
+			// columns are stored as TEXT)
+			else if (typeof tmpValue === 'object' && tmpValue !== null)
+			{
+				tmpValue = JSON.stringify(tmpValue);
+			}
 
 			// Add the colon prefix for sql.js named parameters
 			// (skip if the key already starts with ':')
