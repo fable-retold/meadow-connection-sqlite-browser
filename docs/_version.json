@@ -2,6 +2,6 @@
 	"Name": "meadow-connection-sqlite-browser",
 	"Version": "1.0.2",
 	"Description": "Meadow SQLite connection provider for the browser (sql.js / WASM)",
-	"GeneratedAt": "2026-04-10T01:49:51.612Z",
-	"GitCommit": "92a2609"
+	"GeneratedAt": "2026-04-10T02:05:33.883Z",
+	"GitCommit": "29577c1"
 }
