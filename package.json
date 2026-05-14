@@ -47,11 +47,11 @@
 	},
 	"homepage": "https://github.com/stevenvelozo/meadow-connection-sqlite-browser",
 	"devDependencies": {
-		"fable": "^3.1.63",
-		"pict-docuserve": "^0.1.5",
+		"fable": "^3.1.72",
+		"pict-docuserve": "^1.0.1",
 		"puppeteer": "^24.38.0",
-		"quackage": "^1.1.0",
-		"retold-harness": "^1.1.2"
+		"quackage": "^1.2.3",
+		"retold-harness": "^1.1.12"
 	},
 	"browser": {
 		"sql.js": false
