@@ -1,8 +1,8 @@
 # Meadow Connection SQLite Browser
 
-> **[&#9654; Read the Meadow-Connection-Sqlite-Browser Documentation](https://stevenvelozo.github.io/meadow-connection-sqlite-browser/)** &mdash; interactive docs with the full API reference.
+> **[&#9654; Read the Meadow-Connection-Sqlite-Browser Documentation](https://fable-retold.github.io/meadow-connection-sqlite-browser/)** &mdash; interactive docs with the full API reference.
 
-A browser-compatible SQLite connection provider for the Meadow ORM. Drop-in replacement for [meadow-connection-sqlite](https://github.com/stevenvelozo/meadow-connection-sqlite) that uses [sql.js](https://github.com/sql-js/sql.js) (SQLite compiled to WASM) instead of better-sqlite3 (native Node.js addon).
+A browser-compatible SQLite connection provider for the Meadow ORM. Drop-in replacement for [meadow-connection-sqlite](https://github.com/fable-retold/meadow-connection-sqlite) that uses [sql.js](https://github.com/sql-js/sql.js) (SQLite compiled to WASM) instead of better-sqlite3 (native Node.js addon).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -181,11 +181,11 @@ npm test
 
 ## Part of the Retold Framework
 
-- [meadow](https://github.com/stevenvelozo/meadow) -- ORM and data access framework
-- [meadow-connection-sqlite](https://github.com/stevenvelozo/meadow-connection-sqlite) -- Node.js SQLite provider (better-sqlite3)
-- [foxhound](https://github.com/stevenvelozo/foxhound) -- Query DSL used by Meadow
-- [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) -- RESTful endpoint generation
-- [fable](https://github.com/stevenvelozo/fable) -- Application services framework
+- [meadow](https://github.com/fable-retold/meadow) -- ORM and data access framework
+- [meadow-connection-sqlite](https://github.com/fable-retold/meadow-connection-sqlite) -- Node.js SQLite provider (better-sqlite3)
+- [foxhound](https://github.com/fable-retold/foxhound) -- Query DSL used by Meadow
+- [meadow-endpoints](https://github.com/fable-retold/meadow-endpoints) -- RESTful endpoint generation
+- [fable](https://github.com/fable-retold/fable) -- Application services framework
 
 ## License
 

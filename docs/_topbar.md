@@ -5,4 +5,4 @@
 - [Architecture](architecture.md)
 - [API Reference](api/reference.md)
 - [Pipeline Example](examples-pipeline.md)
-- [GitHub](https://github.com/stevenvelozo/meadow-connection-sqlite)
+- [GitHub](https://github.com/fable-retold/meadow-connection-sqlite)

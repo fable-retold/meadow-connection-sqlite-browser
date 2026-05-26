@@ -14,4 +14,4 @@ Connect any Fable application to a local SQLite database through the service pro
 [Quick Start](quickstart.md)
 [API Reference](api/reference.md)
 [Architecture](architecture.md)
-[GitHub](https://github.com/stevenvelozo/meadow-connection-sqlite)
+[GitHub](https://github.com/fable-retold/meadow-connection-sqlite)
