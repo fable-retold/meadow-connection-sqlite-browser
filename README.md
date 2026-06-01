@@ -1,6 +1,6 @@
 # Meadow Connection SQLite Browser
 
-> **[&#9654; Read the Meadow-Connection-Sqlite-Browser Documentation](https://fable-retold.github.io/meadow-connection-sqlite-browser/)** &mdash; interactive docs with the full API reference.
+> **[Read the Meadow-Connection-Sqlite-Browser Documentation](https://fable-retold.github.io/meadow-connection-sqlite-browser/)** - interactive docs with the full API reference.
 
 A browser-compatible SQLite connection provider for the Meadow ORM. Drop-in replacement for [meadow-connection-sqlite](https://github.com/fable-retold/meadow-connection-sqlite) that uses [sql.js](https://github.com/sql-js/sql.js) (SQLite compiled to WASM) instead of better-sqlite3 (native Node.js addon).
 
