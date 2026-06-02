@@ -1,0 +1,21 @@
+flowchart TD
+	Start["connectAsync() called"]
+	CheckPath{{"SQLiteFilePath<br/>configured?"}}
+	CheckConn{{"Already<br/>connected?"}}
+	Connect["Open database file"]
+	WAL["Enable WAL journaling"]
+	Done["callback(null, db)"]
+	ErrPath["callback(error)"]
+	ErrConn["Log error, callback(null, existingDB)"]
+
+	Start --> CheckPath
+	CheckPath -->|No| ErrPath
+	CheckPath -->|Yes| CheckConn
+	CheckConn -->|Yes| ErrConn
+	CheckConn -->|No| Connect
+	Connect --> WAL
+	WAL --> Done
+
+	style ErrPath fill:#f8e0e0
+	style ErrConn fill:#f8f0e0
+	style Done fill:#e0f8e0

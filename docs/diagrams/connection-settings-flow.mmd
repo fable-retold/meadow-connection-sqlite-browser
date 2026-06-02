@@ -1,0 +1,11 @@
+flowchart TD
+	FS["fable.settings.SQLite.SQLiteFilePath"]
+	CO["Constructor Options.SQLiteFilePath"]
+	Provider["MeadowConnectionSQLite"]
+	Decision{{"Which source?"}}
+	Use["Use resolved SQLiteFilePath"]
+
+	FS --> Decision
+	CO --> Decision
+	Decision -->|"Options override Settings"| Use
+	Use --> Provider

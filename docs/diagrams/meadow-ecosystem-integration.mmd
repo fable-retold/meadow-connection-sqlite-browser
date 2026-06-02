@@ -1,0 +1,27 @@
+sequenceDiagram
+	participant App as Application
+	participant Meadow as Meadow ORM
+	participant FH as FoxHound
+	participant Provider as SQLite Provider
+	participant BS3 as better-sqlite3
+	participant File as .db File
+
+	App->>Provider: connectAsync()
+	Provider->>BS3: new Database(path)
+	BS3->>File: Open / create
+	Provider-->>App: Connected
+
+	App->>Meadow: new Meadow(fable, 'Entity')
+	App->>Meadow: setProvider('ALASQL')
+	App->>Meadow: setSchema(columns)
+
+	Note over App,Provider: For schema DDL
+	App->>Provider: createTable(schema)
+	Provider->>Provider: generateCreateTableStatement()
+	Provider->>BS3: db.exec(ddl)
+
+	Note over App,Provider: For direct queries
+	App->>Provider: .db getter
+	Provider-->>App: Database instance
+	App->>BS3: prepare(sql).all()
+	BS3-->>App: Results

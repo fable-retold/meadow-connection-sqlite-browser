@@ -1,0 +1,27 @@
+sequenceDiagram
+	participant App as Application
+	participant SM as ServiceManager
+	participant Provider as MeadowConnectionSQLite
+	participant BS3 as better-sqlite3
+	participant File as Database File
+
+	App->>SM: addServiceType('MeadowSQLiteProvider', lib)
+	App->>SM: instantiateServiceProvider('MeadowSQLiteProvider')
+	SM->>Provider: new MeadowConnectionSQLite(fable, manifest, hash)
+	Note over Provider: connected = false
+
+	App->>Provider: connectAsync(callback)
+
+	alt SQLiteFilePath missing
+		Provider-->>App: callback(error)
+	else Already connected
+		Provider-->>App: callback(null, existingDB)
+	else Normal connect
+		Provider->>BS3: new Database(filePath, options)
+		BS3->>File: Open or create file
+		File-->>BS3: File handle
+		BS3-->>Provider: Database instance
+		Provider->>BS3: pragma('journal_mode = WAL')
+		Note over Provider: connected = true
+		Provider-->>App: callback(null, database)
+	end

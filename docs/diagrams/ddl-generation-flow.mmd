@@ -1,0 +1,15 @@
+flowchart LR
+	Schema["Meadow Table Schema<br/>{ TableName, Columns[] }"]
+	Gen["generateCreateTableStatement()"]
+	DDL["CREATE TABLE IF NOT EXISTS..."]
+	Exec["db.exec(ddl)"]
+	Table["SQLite Table"]
+
+	Schema --> Gen
+	Gen --> DDL
+	DDL --> Exec
+	Exec --> Table
+
+	style Schema fill:#f0f0f0
+	style DDL fill:#e8f4e8
+	style Table fill:#e8f0f8

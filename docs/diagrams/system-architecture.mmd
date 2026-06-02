@@ -1,0 +1,13 @@
+graph TB
+	App["Fable Application"]
+	Settings["fable.settings.SQLite"]
+	Provider["MeadowConnectionSQLite<br/>(Fable Service Provider)"]
+	BetterSQLite["better-sqlite3<br/>(Native C++ Bindings)"]
+	File["SQLite Database File<br/>or :memory:"]
+
+	App -->|"reads config"| Settings
+	App -->|"connectAsync()"| Provider
+	Provider -->|"new Database(path)"| BetterSQLite
+	BetterSQLite -->|"reads/writes"| File
+	Provider -->|".db getter"| BetterSQLite
+	Settings -->|"SQLiteFilePath"| Provider
