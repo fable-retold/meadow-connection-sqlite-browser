@@ -1,0 +1,3 @@
+graph TD
+    Fable["Fable Application<br/>fable.settings.SQLite<br/>└── SQLiteFilePath"] -->|connectAsync()| MeadowSQLite["MeadowConnectionSQLite<br/>(Fable Service Provider)<br/>.connected / .db / .SQLite"]
+    MeadowSQLite --> BetterSQLite["better-sqlite3<br/>.prepare(sql).run()<br/>.prepare(sql).get()<br/>.prepare(sql).all()<br/>.exec(sql)<br/>.transaction(fn)<br/>.pragma(str)"]

@@ -111,35 +111,8 @@ let _Fable = new libFable(
 
 ## How It Works
 
-```
-┌─────────────────────────────┐
-│  Fable Application          │
-│                             │
-│  fable.settings.SQLite      │
-│   └── SQLiteFilePath        │
-└───────────┬─────────────────┘
-            │ connectAsync()
-            ▼
-┌─────────────────────────────┐
-│  MeadowConnectionSQLite     │
-│  (Fable Service Provider)   │
-│                             │
-│  .connected                 │
-│  .db ──────────────────┐    │
-│  .SQLite               │    │
-└────────────────────────┼────┘
-                         │
-            ┌────────────▼────────────┐
-            │  better-sqlite3         │
-            │                         │
-            │  .prepare(sql).run()    │
-            │  .prepare(sql).get()    │
-            │  .prepare(sql).all()    │
-            │  .exec(sql)             │
-            │  .transaction(fn)       │
-            │  .pragma(str)           │
-            └─────────────────────────┘
-```
+<!-- bespoke diagram: edit diagrams/how-it-works.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-connection-sqlite-browser/docs -->
+![How It Works](diagrams/how-it-works.svg)
 
 The provider manages the connection lifecycle and exposes the raw `better-sqlite3` `Database` object. All queries go through better-sqlite3's synchronous API -- there are no promises or callbacks for individual statements.
 
